@@ -25,7 +25,7 @@ function ChatArea({ socket }) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [data, setData] = useState(null);
 
-   
+    // ---------------- SEND MESSAGE ----------------
     const sendMessage = async (image) => {
         try {
             const newMessage = {
@@ -53,6 +53,7 @@ function ChatArea({ socket }) {
         }
     };
 
+    // ---------------- FORMAT TIME ----------------
     const formatTime = (timestamp) => {
         const now = moment();
         const diff = now.diff(moment(timestamp), "days");
@@ -64,7 +65,7 @@ function ChatArea({ socket }) {
         return moment(timestamp).format("MMM D, hh:mm A");
     };
 
-   
+    // ---------------- GET MESSAGES ----------------
     const getMessages = useCallback(async () => {
         try {
             dispatch(showLoader());
@@ -80,7 +81,7 @@ function ChatArea({ socket }) {
         }
     }, [selectedChat?._id, dispatch]);
 
-    
+    // ---------------- CLEAR UNREAD ----------------
     const clearUnreadMessages = useCallback(async () => {
         try {
             socket.emit("clear-unread-messages", {
@@ -106,7 +107,7 @@ function ChatArea({ socket }) {
         }
     }, [selectedChat, socket, allChats, dispatch]);
 
-  
+    // ---------------- SEND IMAGE ----------------
     const sendImage = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
@@ -118,6 +119,7 @@ function ChatArea({ socket }) {
         };
     };
 
+    // ---------------- SOCKET + CHAT EFFECT ----------------
     useEffect(() => {
         if (!selectedChat?._id) return;
 
@@ -184,8 +186,15 @@ function ChatArea({ socket }) {
             socket.off("message-count-cleared");
             socket.off("started-typing");
         };
-    }, [selectedChat?._id, socket, user._id]);
+    }, [
+        selectedChat?._id,
+        socket,
+        user._id,
+        getMessages,
+        clearUnreadMessages
+    ]);
 
+    // ---------------- AUTO SCROLL ----------------
     useEffect(() => {
         const container =
             document.getElementById("main-chat-area");
@@ -195,7 +204,7 @@ function ChatArea({ socket }) {
         }
     }, [allMessages, isTyping]);
 
-  
+    // ---------------- UI ----------------
     return (
         <>
             {selectedChat && (
@@ -206,11 +215,12 @@ function ChatArea({ socket }) {
                     </div>
 
                     <div className="main-chat-area" id="main-chat-area">
-                        {allMessages.map(msg => {
+                        {allMessages.map((msg, index) => {
                             const isMe = msg.sender === user._id;
 
                             return (
                                 <div
+                                    key={index}
                                     className="message-container"
                                     style={{
                                         justifyContent: isMe ? "end" : "start"
@@ -273,7 +283,7 @@ function ChatArea({ socket }) {
                             className="send-message-input"
                             placeholder="Type a message"
                             value={message}
-                            onChange={e => {
+                            onChange={(e) => {
                                 setMessage(e.target.value);
 
                                 socket.emit("user-typing", {
