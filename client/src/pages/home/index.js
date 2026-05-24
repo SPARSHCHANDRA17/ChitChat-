@@ -5,26 +5,39 @@ import Sidebar from "./components/sidebar";
 import { io } from 'socket.io-client';
 import { useEffect, useState } from "react";
 
-const socket = io('https://chitchat-n2th.onrender.com');
+// Initialize socket instance safely
+const socket = io('https://chitchat-n2th.onrender.com', {
+    transports: ['websocket', 'polling']
+});
 
 function Home(){
     const { selectedChat, user } = useSelector(state => state.userReducer);
     const [onlineUser, setOnlineUser] = useState([]); 
 
     useEffect(() => {
-        if(user){
-            socket.emit('join-room', user._id);
-            socket.emit('user-login', user._id);
+        if (!user) return;
 
-            socket.on('online-users', onlineusers => {
-                setOnlineUser(onlineusers);
-            });
-            socket.on('online-users-updated', onlineusers => {
-                setOnlineUser(onlineusers);
-            });
-        }
+        // 1. Tell the backend who we are and join our room
+        socket.emit('join-room', user._id);
+        socket.emit('user-login', user._id);
+
+        // 2. Listen for the initial online users state
+        socket.on('online-users', (onlineusers) => {
+            setOnlineUser(onlineusers);
+        });
+
+        // 3. Listen for changes when users disconnect/connect
+        socket.on('online-users-updated', (onlineusers) => {
+            setOnlineUser(onlineusers);
+        });
+
+        // Clean up socket listeners cleanly when component unmounts
+        return () => {
+            socket.off('online-users');
+            socket.off('online-users-updated');
+        };
         
-    }, [user, onlineUser])
+    }, [user._id]); 
 
     return (
         <div className="home-page">
