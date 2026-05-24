@@ -25,7 +25,7 @@ function ChatArea({ socket }) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [data, setData] = useState(null);
 
-   
+
     const sendMessage = async (image) => {
         try {
             const newMessage = {
@@ -78,7 +78,7 @@ function ChatArea({ socket }) {
             dispatch(hideLoader());
             toast.error(error.message);
         }
-    }, [selectedChat?._id, dispatch]); // Only depend on the ID string, not the full object
+    }, [selectedChat?._id, dispatch]);
 
     const clearUnreadMessages = useCallback(async () => {
         if (!selectedChat?._id) return;
@@ -105,7 +105,7 @@ function ChatArea({ socket }) {
         }
     }, [selectedChat?._id, selectedChat?.members, socket, allChats, dispatch]);
 
-  
+
     const sendImage = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -167,8 +167,9 @@ function ChatArea({ socket }) {
         socket.on("started-typing", (typingData) => {
             setData(typingData);
 
+            // Added safe optional chain check (selectedChat?._id) to fix the Uncaught TypeError crash
             if (
-                selectedChat._id === typingData.chatId &&
+                selectedChat?._id === typingData.chatId &&
                 typingData.sender !== user._id
             ) {
                 setIsTyping(true);
@@ -182,8 +183,8 @@ function ChatArea({ socket }) {
             socket.off("started-typing");
         };
 
-    
-    }, [selectedChat?._id, user._id, socket]); 
+
+    }, [selectedChat?._id, user._id, socket, getMessages, clearUnreadMessages, dispatch]); 
 
     // ================= AUTO SCROLL =================
     useEffect(() => {
