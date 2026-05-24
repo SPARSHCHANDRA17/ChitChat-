@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createNewMessage, getAllMessages } from "../../../apiCalls/message";
 import { hideLoader, showLoader } from "../../../redux/loaderSlice";
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { clearUnreadMessageCount } from "../../../apiCalls/chat";
 import moment from "moment";
 import store from "../../../redux/store";
@@ -11,6 +11,7 @@ import EmojiPicker from "emoji-picker-react";
 
 function ChatArea({ socket }) {
     const dispatch = useDispatch();
+
     const { selectedChat, user, allChats } = useSelector(
         state => state.userReducer
     );
@@ -24,6 +25,7 @@ function ChatArea({ socket }) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [data, setData] = useState(null);
 
+    // ---------------- SEND MESSAGE ----------------
     const sendMessage = async (image) => {
         try {
             const newMessage = {
@@ -51,16 +53,20 @@ function ChatArea({ socket }) {
         }
     };
 
+    // ---------------- FORMAT TIME ----------------
     const formatTime = (timestamp) => {
         const now = moment();
         const diff = now.diff(moment(timestamp), "days");
 
-        if (diff < 1) return `Today ${moment(timestamp).format("hh:mm A")}`;
-        if (diff === 1) return `Yesterday ${moment(timestamp).format("hh:mm A")}`;
+        if (diff < 1)
+            return `Today ${moment(timestamp).format("hh:mm A")}`;
+        if (diff === 1)
+            return `Yesterday ${moment(timestamp).format("hh:mm A")}`;
         return moment(timestamp).format("MMM D, hh:mm A");
     };
 
-    const getMessages = async () => {
+    // ---------------- GET MESSAGES (STABLE) ----------------
+    const getMessages = useCallback(async () => {
         try {
             dispatch(showLoader());
             const response = await getAllMessages(selectedChat._id);
@@ -73,9 +79,10 @@ function ChatArea({ socket }) {
             dispatch(hideLoader());
             toast.error(error.message);
         }
-    };
+    }, [selectedChat?._id, dispatch]);
 
-    const clearUnreadMessages = async () => {
+    // ---------------- CLEAR UNREAD (STABLE) ----------------
+    const clearUnreadMessages = useCallback(async () => {
         try {
             socket.emit("clear-unread-messages", {
                 chatId: selectedChat._id,
@@ -98,8 +105,9 @@ function ChatArea({ socket }) {
         } catch (error) {
             toast.error(error.message);
         }
-    };
+    }, [selectedChat, socket, allChats, dispatch]);
 
+    // ---------------- SEND IMAGE ----------------
     const sendImage = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
@@ -111,7 +119,7 @@ function ChatArea({ socket }) {
         };
     };
 
-  
+    // ---------------- MAIN SOCKET + CHAT EFFECT ----------------
     useEffect(() => {
         if (!selectedChat?._id) return;
 
@@ -174,12 +182,19 @@ function ChatArea({ socket }) {
         });
 
         return () => {
-            socket.off("receive-message");
+            socket.off("receive-message", handleReceiveMessage);
             socket.off("message-count-cleared");
             socket.off("started-typing");
         };
-    }, [selectedChat, socket, user._id, dispatch, allChats]);
+    }, [
+        selectedChat,
+        socket,
+        user._id,
+        getMessages,
+        clearUnreadMessages
+    ]);
 
+    // ---------------- AUTO SCROLL ----------------
     useEffect(() => {
         const container =
             document.getElementById("main-chat-area");
@@ -189,6 +204,7 @@ function ChatArea({ socket }) {
         }
     }, [allMessages, isTyping]);
 
+    // ---------------- UI ----------------
     return (
         <>
             {selectedChat && (
@@ -224,6 +240,7 @@ function ChatArea({ socket }) {
                                             }
                                         >
                                             <div>{msg.text}</div>
+
                                             {msg.image && (
                                                 <img
                                                     src={msg.image}
@@ -263,7 +280,7 @@ function ChatArea({ socket }) {
 
                     {showEmojiPicker && (
                         <EmojiPicker
-                            onEmojiClick={e =>
+                            onEmojiClick={(e) =>
                                 setMessage(
                                     message + e.emoji
                                 )
@@ -279,6 +296,7 @@ function ChatArea({ socket }) {
                             value={message}
                             onChange={e => {
                                 setMessage(e.target.value);
+
                                 socket.emit("user-typing", {
                                     chatId:
                                         selectedChat._id,

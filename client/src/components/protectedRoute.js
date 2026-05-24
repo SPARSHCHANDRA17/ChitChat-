@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getLoggedUser, getAllUsers } from "./../apiCalls/users";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { hideLoader, showLoader } from "../redux/loaderSlice";
 import toast from "react-hot-toast";
 import { setAllUsers, setUser, setAllChats } from "../redux/usersSlice";
 import { getAllChats } from "../apiCalls/chat";
 
 function ProtectedRoute({ children }) {
-    const { user } = useSelector(state => state.userReducer);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -71,7 +70,7 @@ function ProtectedRoute({ children }) {
         getAllUsersFromDb();
         getCurrentUserChats();
 
-    }, [navigate]); 
+    }, [navigate]);
 
     return <div>{children}</div>;
 }
