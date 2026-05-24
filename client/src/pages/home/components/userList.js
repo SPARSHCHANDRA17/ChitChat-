@@ -201,7 +201,6 @@ function UsersList({ searchKey, socket, onlineUser = [] }) {
                 );
             }
 
-            // Safety Guard: skip rendering this element if targetUser resolution failed
             if (!targetUser || !targetUser._id) return null;
 
             return (
@@ -285,7 +284,7 @@ function UsersList({ searchKey, socket, onlineUser = [] }) {
                 </div>
             );
         })
-        .filter(Boolean); // Clean up any null array cells securely
+        .filter(Boolean);
 }
 
 export default UsersList;

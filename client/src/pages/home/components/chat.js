@@ -12,7 +12,7 @@ import EmojiPicker from "emoji-picker-react";
 function ChatArea({ socket }) {
     const dispatch = useDispatch();
 
-    const { selectedChat, user, allChats } = useSelector(
+    const { selectedChat, user } = useSelector(
         state => state.userReducer
     );
 
@@ -24,7 +24,6 @@ function ChatArea({ socket }) {
     const [isTyping, setIsTyping] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [data, setData] = useState(null);
-
 
     const sendMessage = async (image) => {
         try {
@@ -62,7 +61,6 @@ function ChatArea({ socket }) {
         return moment(timestamp).format("MMM D, hh:mm A");
     };
 
-
     const getMessages = useCallback(async () => {
         if (!selectedChat?._id) return;
 
@@ -92,7 +90,11 @@ function ChatArea({ socket }) {
             const response = await clearUnreadMessageCount(selectedChat._id);
 
             if (response.success) {
-                const updatedChats = allChats.map(chat =>
+                // FIX: Grab fresh allChats from the store instead of passing it as a dependency.
+                // This stops the infinite re-render loop!
+                const currentAllChats = store.getState().userReducer.allChats;
+                
+                const updatedChats = currentAllChats.map(chat =>
                     chat._id === selectedChat._id
                         ? response.data
                         : chat
@@ -103,7 +105,7 @@ function ChatArea({ socket }) {
         } catch (error) {
             toast.error(error.message);
         }
-    }, [selectedChat?._id, selectedChat?.members, socket, allChats, dispatch]);
+    }, [selectedChat?._id, selectedChat?.members, socket, dispatch]); // Removed allChats from here!
 
 
     const sendImage = (e) => {
@@ -167,7 +169,6 @@ function ChatArea({ socket }) {
         socket.on("started-typing", (typingData) => {
             setData(typingData);
 
-            // Added safe optional chain check (selectedChat?._id) to fix the Uncaught TypeError crash
             if (
                 selectedChat?._id === typingData.chatId &&
                 typingData.sender !== user._id
@@ -183,8 +184,8 @@ function ChatArea({ socket }) {
             socket.off("started-typing");
         };
 
-
-    }, [selectedChat?._id, user._id, socket, getMessages, clearUnreadMessages, dispatch]); 
+    // Kept dependencies perfectly clean now that the callbacks are stable
+    }, [selectedChat?._id, user._id, socket, getMessages, clearUnreadMessages]); 
 
     // ================= AUTO SCROLL =================
     useEffect(() => {
