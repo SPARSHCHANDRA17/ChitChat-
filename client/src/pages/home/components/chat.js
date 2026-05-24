@@ -63,7 +63,7 @@ function ChatArea({ socket }) {
         return moment(timestamp).format("MMM D, hh:mm A");
     };
 
-    // ================= GET MESSAGES (FIXED) =================
+    // ================= GET MESSAGES =================
     const getMessages = useCallback(async () => {
         if (!selectedChat?._id) return;
 
@@ -79,9 +79,9 @@ function ChatArea({ socket }) {
             dispatch(hideLoader());
             toast.error(error.message);
         }
-    }, [selectedChat?._id, dispatch]);
+    }, [selectedChat, dispatch]);
 
-    // ================= CLEAR UNREAD (FIXED) =================
+    // ================= CLEAR UNREAD =================
     const clearUnreadMessages = useCallback(async () => {
         if (!selectedChat?._id) return;
 
@@ -105,7 +105,7 @@ function ChatArea({ socket }) {
         } catch (error) {
             toast.error(error.message);
         }
-    }, [selectedChat?._id, socket, allChats, dispatch]);
+    }, [selectedChat, socket, allChats, dispatch]);
 
     // ================= SEND IMAGE =================
     const sendImage = (e) => {
@@ -120,7 +120,7 @@ function ChatArea({ socket }) {
         };
     };
 
-    // ================= MAIN EFFECT (FIXED DEPENDENCIES) =================
+    // ================= MAIN EFFECT =================
     useEffect(() => {
         if (!selectedChat?._id) return;
 
@@ -166,12 +166,12 @@ function ChatArea({ socket }) {
             }
         });
 
-        socket.on("started-typing", (data) => {
-            setData(data);
+        socket.on("started-typing", (typingData) => {
+            setData(typingData);
 
             if (
-                selectedChat._id === data.chatId &&
-                data.sender !== user._id
+                selectedChat._id === typingData.chatId &&
+                typingData.sender !== user._id
             ) {
                 setIsTyping(true);
                 setTimeout(() => setIsTyping(false), 2000);
@@ -185,7 +185,7 @@ function ChatArea({ socket }) {
         };
 
     }, [
-        selectedChat?._id,
+        selectedChat,
         user._id,
         socket,
         getMessages,

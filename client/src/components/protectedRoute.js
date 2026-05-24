@@ -62,7 +62,7 @@ function ProtectedRoute({ children }) {
         }
     }, [dispatch, navigate]);
 
-    // ================= EFFECT =================
+    
     useEffect(() => {
         if (!localStorage.getItem("token")) {
             navigate("/login");
