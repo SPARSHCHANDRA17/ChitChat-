@@ -15,7 +15,9 @@ function ProtectedRoute({ children }) {
     const getloggedInUser = useCallback(async () => {
         try {
             dispatch(showLoader());
+
             const response = await getLoggedUser();
+
             dispatch(hideLoader());
 
             if (response.success) {
@@ -30,11 +32,13 @@ function ProtectedRoute({ children }) {
         }
     }, [dispatch, navigate]);
 
-    // ---------------- USERS LIST ----------------
+    // ---------------- USERS ----------------
     const getAllUsersFromDb = useCallback(async () => {
         try {
             dispatch(showLoader());
+
             const response = await getAllUsers();
+
             dispatch(hideLoader());
 
             if (response.success) {
@@ -64,9 +68,7 @@ function ProtectedRoute({ children }) {
 
     // ---------------- EFFECT ----------------
     useEffect(() => {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
+        if (!localStorage.getItem("token")) {
             navigate("/login");
             return;
         }
@@ -74,7 +76,6 @@ function ProtectedRoute({ children }) {
         getloggedInUser();
         getAllUsersFromDb();
         getCurrentUserChats();
-
     }, [
         navigate,
         getloggedInUser,
@@ -82,7 +83,7 @@ function ProtectedRoute({ children }) {
         getCurrentUserChats
     ]);
 
-    return <div>{children}</div>;
+    return children;
 }
 
 export default ProtectedRoute;
