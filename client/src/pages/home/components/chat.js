@@ -25,7 +25,7 @@ function ChatArea({ socket }) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [data, setData] = useState(null);
 
-    // ================= SEND MESSAGE =================
+   
     const sendMessage = async (image) => {
         try {
             const newMessage = {
@@ -53,7 +53,6 @@ function ChatArea({ socket }) {
         }
     };
 
-    // ================= FORMAT TIME =================
     const formatTime = (timestamp) => {
         const now = moment();
         const diff = now.diff(moment(timestamp), "days");
@@ -63,7 +62,7 @@ function ChatArea({ socket }) {
         return moment(timestamp).format("MMM D, hh:mm A");
     };
 
-    // ================= GET MESSAGES =================
+
     const getMessages = useCallback(async () => {
         if (!selectedChat?._id) return;
 
@@ -79,9 +78,8 @@ function ChatArea({ socket }) {
             dispatch(hideLoader());
             toast.error(error.message);
         }
-    }, [selectedChat, dispatch]);
+    }, [selectedChat?._id, dispatch]); // Only depend on the ID string, not the full object
 
-    // ================= CLEAR UNREAD =================
     const clearUnreadMessages = useCallback(async () => {
         if (!selectedChat?._id) return;
 
@@ -105,9 +103,9 @@ function ChatArea({ socket }) {
         } catch (error) {
             toast.error(error.message);
         }
-    }, [selectedChat, socket, allChats, dispatch]);
+    }, [selectedChat?._id, selectedChat?.members, socket, allChats, dispatch]);
 
-    // ================= SEND IMAGE =================
+  
     const sendImage = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -184,14 +182,8 @@ function ChatArea({ socket }) {
             socket.off("started-typing");
         };
 
-    }, [
-        selectedChat,
-        user._id,
-        socket,
-        getMessages,
-        clearUnreadMessages,
-        dispatch
-    ]);
+    
+    }, [selectedChat?._id, user._id, socket]); 
 
     // ================= AUTO SCROLL =================
     useEffect(() => {
