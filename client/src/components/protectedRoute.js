@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getLoggedUser, getAllUsers } from "./../apiCalls/users";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../redux/loaderSlice";
 import toast from "react-hot-toast";
 import { setAllUsers, setUser, setAllChats } from "../redux/usersSlice";
@@ -70,7 +70,7 @@ function ProtectedRoute({ children }) {
         getAllUsersFromDb();
         getCurrentUserChats();
 
-    }, [navigate]);
+    }, [navigate]); 
 
     return <div>{children}</div>;
 }

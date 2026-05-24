@@ -25,14 +25,14 @@ function ChatArea({ socket }) {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [data, setData] = useState(null);
 
-    // ---------------- SEND MESSAGE ----------------
+   
     const sendMessage = async (image) => {
         try {
             const newMessage = {
                 chatId: selectedChat._id,
                 sender: user._id,
                 text: message,
-                image: image
+                image
             };
 
             socket.emit("send-message", {
@@ -53,7 +53,6 @@ function ChatArea({ socket }) {
         }
     };
 
-    // ---------------- FORMAT TIME ----------------
     const formatTime = (timestamp) => {
         const now = moment();
         const diff = now.diff(moment(timestamp), "days");
@@ -65,7 +64,7 @@ function ChatArea({ socket }) {
         return moment(timestamp).format("MMM D, hh:mm A");
     };
 
-    // ---------------- GET MESSAGES (STABLE) ----------------
+   
     const getMessages = useCallback(async () => {
         try {
             dispatch(showLoader());
@@ -81,7 +80,7 @@ function ChatArea({ socket }) {
         }
     }, [selectedChat?._id, dispatch]);
 
-    // ---------------- CLEAR UNREAD (STABLE) ----------------
+    
     const clearUnreadMessages = useCallback(async () => {
         try {
             socket.emit("clear-unread-messages", {
@@ -107,7 +106,7 @@ function ChatArea({ socket }) {
         }
     }, [selectedChat, socket, allChats, dispatch]);
 
-    // ---------------- SEND IMAGE ----------------
+  
     const sendImage = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
@@ -119,7 +118,6 @@ function ChatArea({ socket }) {
         };
     };
 
-    // ---------------- MAIN SOCKET + CHAT EFFECT ----------------
     useEffect(() => {
         if (!selectedChat?._id) return;
 
@@ -186,15 +184,8 @@ function ChatArea({ socket }) {
             socket.off("message-count-cleared");
             socket.off("started-typing");
         };
-    }, [
-        selectedChat,
-        socket,
-        user._id,
-        getMessages,
-        clearUnreadMessages
-    ]);
+    }, [selectedChat?._id, socket, user._id]);
 
-    // ---------------- AUTO SCROLL ----------------
     useEffect(() => {
         const container =
             document.getElementById("main-chat-area");
@@ -204,7 +195,7 @@ function ChatArea({ socket }) {
         }
     }, [allMessages, isTyping]);
 
-    // ---------------- UI ----------------
+  
     return (
         <>
             {selectedChat && (
@@ -214,21 +205,15 @@ function ChatArea({ socket }) {
                             `${selectedUser.firstname} ${selectedUser.lastname}`}
                     </div>
 
-                    <div
-                        className="main-chat-area"
-                        id="main-chat-area"
-                    >
+                    <div className="main-chat-area" id="main-chat-area">
                         {allMessages.map(msg => {
-                            const isMe =
-                                msg.sender === user._id;
+                            const isMe = msg.sender === user._id;
 
                             return (
                                 <div
                                     className="message-container"
                                     style={{
-                                        justifyContent: isMe
-                                            ? "end"
-                                            : "start"
+                                        justifyContent: isMe ? "end" : "start"
                                     }}
                                 >
                                     <div>
@@ -254,14 +239,10 @@ function ChatArea({ socket }) {
                                         <div
                                             className="message-timestamp"
                                             style={{
-                                                float: isMe
-                                                    ? "right"
-                                                    : "left"
+                                                float: isMe ? "right" : "left"
                                             }}
                                         >
-                                            {formatTime(
-                                                msg.createdAt
-                                            )}
+                                            {formatTime(msg.createdAt)}
                                         </div>
                                     </div>
                                 </div>
@@ -281,9 +262,7 @@ function ChatArea({ socket }) {
                     {showEmojiPicker && (
                         <EmojiPicker
                             onEmojiClick={(e) =>
-                                setMessage(
-                                    message + e.emoji
-                                )
+                                setMessage(message + e.emoji)
                             }
                         />
                     )}
@@ -298,12 +277,8 @@ function ChatArea({ socket }) {
                                 setMessage(e.target.value);
 
                                 socket.emit("user-typing", {
-                                    chatId:
-                                        selectedChat._id,
-                                    members:
-                                        selectedChat.members.map(
-                                            m => m._id
-                                        ),
+                                    chatId: selectedChat._id,
+                                    members: selectedChat.members.map(m => m._id),
                                     sender: user._id
                                 });
                             }}
@@ -323,9 +298,7 @@ function ChatArea({ socket }) {
                         <button
                             className="fa fa-smile-o send-emoji-btn"
                             onClick={() =>
-                                setShowEmojiPicker(
-                                    !showEmojiPicker
-                                )
+                                setShowEmojiPicker(!showEmojiPicker)
                             }
                         />
 
