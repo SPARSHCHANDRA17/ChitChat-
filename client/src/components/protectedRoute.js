@@ -11,13 +11,11 @@ function ProtectedRoute({ children }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // ---------------- USER ----------------
+    // ================= USER =================
     const getloggedInUser = useCallback(async () => {
         try {
             dispatch(showLoader());
-
             const response = await getLoggedUser();
-
             dispatch(hideLoader());
 
             if (response.success) {
@@ -32,13 +30,11 @@ function ProtectedRoute({ children }) {
         }
     }, [dispatch, navigate]);
 
-    // ---------------- USERS ----------------
+    // ================= USERS =================
     const getAllUsersFromDb = useCallback(async () => {
         try {
             dispatch(showLoader());
-
             const response = await getAllUsers();
-
             dispatch(hideLoader());
 
             if (response.success) {
@@ -53,7 +49,7 @@ function ProtectedRoute({ children }) {
         }
     }, [dispatch, navigate]);
 
-    // ---------------- CHATS ----------------
+    // ================= CHATS =================
     const getCurrentUserChats = useCallback(async () => {
         try {
             const response = await getAllChats();
@@ -66,7 +62,7 @@ function ProtectedRoute({ children }) {
         }
     }, [dispatch, navigate]);
 
-    // ---------------- EFFECT ----------------
+    // ================= EFFECT =================
     useEffect(() => {
         if (!localStorage.getItem("token")) {
             navigate("/login");
@@ -76,12 +72,7 @@ function ProtectedRoute({ children }) {
         getloggedInUser();
         getAllUsersFromDb();
         getCurrentUserChats();
-    }, [
-        navigate,
-        getloggedInUser,
-        getAllUsersFromDb,
-        getCurrentUserChats
-    ]);
+    }, [getloggedInUser, getAllUsersFromDb, getCurrentUserChats, navigate]);
 
     return children;
 }
