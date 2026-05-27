@@ -37,7 +37,7 @@ function Home(){
             socket.off('online-users-updated');
         };
         
-    }, [user._id]); 
+    }, [user?._id]); 
 
     return (
         <div className="home-page">
