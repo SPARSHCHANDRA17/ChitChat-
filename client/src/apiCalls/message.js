@@ -17,3 +17,11 @@ export const getAllMessages = async ( chatId ) => {
         return error;
     }
 }
+export const getAiReply = async (lastMessage) => {
+    try {
+        const response = await axiosInstance.post('/api/ai/suggest-reply', { lastMessage });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}

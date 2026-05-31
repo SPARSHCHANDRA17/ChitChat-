@@ -26,3 +26,13 @@ export const clearUnreadMessageCount = async (chatId) => {
         return error;
     }
 }
+
+// Added deleteChat function
+export const deleteChat = async (chatId) => {
+    try {
+        const response = await axiosInstance.post('/api/chat/delete-chat', { chatId });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}

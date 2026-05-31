@@ -9,6 +9,7 @@
   "author": "Manoj Jha",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.0",
     "cors": "^2.8.5",
@@ -16,6 +17,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.1",
+    "openai": "^6.39.1",
     "socket.io": "^4.7.5"
   },
   "devDependencies": {

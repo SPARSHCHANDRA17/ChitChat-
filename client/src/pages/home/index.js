@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 import { useEffect, useState } from "react";
 
 // Initialize socket instance safely
-const socket = io('https://chitchat-n2th.onrender.com', {
+const socket = io('https://chitchat-v9ow.onrender.com', {
     transports: ['websocket', 'polling']
 });
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const url = "https://chitchat-n2th.onrender.com"; 
+export const url = "https://chitchat-v9ow.onrender.com"; 
 
 export const axiosInstance = axios.create({
     baseURL: url,

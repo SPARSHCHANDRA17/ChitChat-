@@ -391,3 +391,56 @@ i { margin: 5px 10px; }
 input[type="file"]::file-selector-button { border-radius: 4px; padding: 0 16px; height: 40px; cursor: pointer; background-color: #28282B; color: white; border: 1px solid rgba(0, 0, 0, 0.16); box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05); margin-right: 16px; transition: background-color 200ms; }
 input[type="file"]::file-selector-button:hover { background-color: #f3f4f6; color: #28282B; }
 .logout-button { background-color: transparent; color: #3b3b4f; border: none; font-size: 18px; cursor: pointer; }
+/* --- AI Smart Reply Styles --- */
+.ai-suggestion-bubble {
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin: 0 20px 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-suggestion-text {
+  font-size: 13px;
+  color: #28282B;
+  flex: 1;
+  margin-right: 15px;
+}
+
+.ai-suggestion-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ai-btn-use {
+  background-color: #3b3b4f;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ai-btn-dismiss {
+  background-color: transparent;
+  color: #999;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+
+.send-ai-btn {
+  position: absolute;
+  right: 130px; 
+  font-size: 25px;
+  color: #3b3b4f;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  margin-top: 5px;
+}

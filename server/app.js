@@ -5,6 +5,8 @@ const authRouter = require('./controllers/authController');
 const userRouter = require('./controllers/userController');
 const chatRouter = require('./controllers/chatController');
 const messageRouter = require('./controllers/messageController');
+const { suggestReply } = require('./controllers/aiController'); // Added
+const authMiddleware = require('./middlewares/authMiddleware'); // Added
 
 // Define allowed origins for both Express and Socket.io
 const allowedOrigins = [
@@ -34,14 +36,18 @@ const io = require('socket.io')(server, {
     }
 });
 
+// Routes
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/message', messageRouter);
 
+// AI Route
+app.post('/api/ai/suggest-reply', authMiddleware, suggestReply);
+
 const onlineUser = [];
 
-//TEST SOCKET CONNECTION FROM CLIENT
+// SOCKET CONNECTION
 io.on('connection', socket => {
     socket.on('join-room', userid => {
         socket.join(userid);
