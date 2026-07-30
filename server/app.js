@@ -14,9 +14,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5000',
   'https://chit-chat-ch2it5pta-sparsh-s-projects4.vercel.app',
-  'https://chit-chat-app-puce.vercel.app'
-]; 
-
+  'https://chit-chat-app-puce.vercel.app',
+  'https://chit-chat-app-main-sparshs-projects4.vercel.app'
+];
 app.use(cors({ 
   origin: allowedOrigins, 
   credentials: true, 
