@@ -5,3 +5,4 @@ client/.env
 server/.env
 dist
 build
+.vercel
